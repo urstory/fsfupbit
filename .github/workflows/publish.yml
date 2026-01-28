@@ -27,7 +27,7 @@ jobs:
       - name: Build package
         run: python -m build
 
-      -name: Check package
+      - name: Check package
         run: twine check dist/*
 
       - name: Publish to PyPI
