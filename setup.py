@@ -28,7 +28,7 @@ setuptools.setup(
     description='Enhanced Python wrapper for Upbit API with additional features (Based on pyupbit)',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/fullstack-research-lab/fsfupbit',
+    url='https://github.com/urstory/fsfupbit',
     packages=setuptools.find_packages(),
     install_requires=install_requires,
     classifiers=[
@@ -48,9 +48,9 @@ setuptools.setup(
     python_requires='>=3.8',
     keywords="upbit api cryptocurrency trading bitcoin ethereum korea exchange fsfupbit",
     project_urls={
-        "Bug Reports": "https://github.com/fullstack-research-lab/fsfupbit/issues",
-        "Source": "https://github.com/fullstack-research-lab/fsfupbit",
-        "Documentation": "https://github.com/fullstack-research-lab/fsfupbit/blob/main/docs/api.md",
+        "Bug Reports": "https://github.com/urstory/fsfupbit/issues",
+        "Source": "https://github.com/urstory/fsfupbit",
+        "Documentation": "https://github.com/urstory/fsfupbit/blob/main/docs/api.md",
         "Original Source": "https://github.com/sharebook-kr/pyupbit",
     },
 )

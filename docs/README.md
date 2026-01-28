@@ -242,7 +242,7 @@ Apache License, Version 2.0
 **Full Stack Research Lab (풀스택패밀리 연구소)**
 
 - Website: https://www.fullstackfamily.com/
-- GitHub: https://github.com/fullstack-research-lab/fsfupbit
+- GitHub: https://github.com/urstory/fsfupbit
 
 ---
 

@@ -2,6 +2,7 @@
 
 > Enhanced Python wrapper for Upbit API - A maintained fork of pyupbit
 
+[![PyPI version](https://badge.fury.io/py/fsfupbit.svg)](https://badge.fury.io/py/fsfupbit)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -242,8 +243,8 @@ limitations under the License.
 **Full Stack Research Lab (풀스택패밀리 연구소)**
 
 - Website: https://www.fullstackfamily.com/
-- GitHub: https://github.com/fullstack-research-lab/fsfupbit
-- Repository: https://github.com/fullstack-research-lab/fsfupbit
+- GitHub: https://github.com/urstory/fsfupbit
+- Repository: https://github.com/urstory/fsfupbit
 
 ---
 

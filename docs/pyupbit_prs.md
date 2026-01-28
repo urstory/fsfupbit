@@ -306,7 +306,7 @@ python -m pytest tests/ -v
 
 pyupbit의 PR과 관련된 문제나 fsfupbit 사용 중遇到的 문제는:
 
-- **GitHub Issues**: https://github.com/fullstack-research-lab/fsfupbit/issues
+- **GitHub Issues**: https://github.com/urstory/fsfupbit/issues
 
 ---
 
@@ -314,7 +314,7 @@ pyupbit의 PR과 관련된 문제나 fsfupbit 사용 중遇到的 문제는:
 
 - [Upbit Open API Documentation](https://docs.upbit.com)
 - [pyupbit Original Repository](https://github.com/sharebook-kr/pyupbit)
-- [fsfupbit GitHub Repository](https://github.com/fullstack-research-lab/fsfupbit)
+- [fsfupbit GitHub Repository](https://github.com/urstory/fsfupbit)
 
 ---
 

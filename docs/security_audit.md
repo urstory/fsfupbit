@@ -163,7 +163,7 @@ def _generate_jwt_token(self) -> str:
 
 보안 문제를 발견하시면:
 
-- **GitHub Issues**: https://github.com/fullstack-research-lab/fsfupbit/issues
+- **GitHub Issues**: https://github.com/urstory/fsfupbit/issues
 
 ---
 
