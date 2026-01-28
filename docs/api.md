@@ -2,7 +2,7 @@
 
 > Enhanced Python wrapper for Upbit API - Complete API Reference
 
-**Version**: 1.0.0
+**Version**: 1.0.1
 **Updated**: 2026-01-29
 
 Based on [Upbit Open API Documentation](https://docs.upbit.com) with the latest updates through 2026.
@@ -11,6 +11,9 @@ Based on [Upbit Open API Documentation](https://docs.upbit.com) with the latest 
 
 ## Table of Contents
 
+- [API 개요](#api-개요)
+- [인증 방식](#인증-방식)
+- [Rate Limit](#rate-limit)
 - [시세 조회 API](#시세-조회-api)
 - [거래/자산 관리 API](#거래자산-관리-api)
 - [입출금 API](#입출금-api)
@@ -19,7 +22,86 @@ Based on [Upbit Open API Documentation](https://docs.upbit.com) with the latest 
 
 ---
 
+## API 개요
+
+업비트 API는 정보 성격에 따라 **두 가지 카테고리**로 분류됩니다.
+
+### 1. 시세 조회 (Quotation) API
+
+| 특징 | 설명 |
+|------|------|
+| **권한** | Public API (인증 없이 조회 가능) |
+| **기능** | 페어, 캔들, 체결 이력, 현재가, 호가 조회 |
+| **범위** | 조회만 지원 (과거 이력 + 실시간) |
+
+### 2. 거래 및 자산 관리 (Exchange) API
+
+| 특징 | 설명 |
+|------|------|
+| **권한** | Private API (API Key 인증 필수) |
+| **기능** | 자산 조회, 주문 관리, 입출금 관리 |
+| **범위** | 생성, 실행, 취소, 조회 지원 |
+
+### REST API vs WebSocket
+
+| 비교 항목 | REST API | WebSocket |
+|-----------|----------|------------|
+| **통신 방식** | 요청-응답 (Request-Response) | 실시간 스트림 |
+| **장점** | 구현 쉬움, HTTP 기반 | 낮은 지연시간, 트래픽 최소화 |
+| **단점** | 실시간성 낮음, 매번 요청 필요 | 높은 구현 난이도, 연결 관리 필요 |
+| **추천 용도** | 주문/입출금, 긴 주기 조회 | 실시간 시세, 자동매매 전략 |
+
+---
+
+## 인증 방식
+
+### API Key 발급
+
+업비트 개발자 센터에서 API Key를 발급받아야 합니다.
+
+1. [업비트 개발자 센터](https://docs.upbit.com/kr/guide/overview) 접속
+2. API Key 발급 (Access Key, Secret Key)
+3. IP 주소 허용 설정 (보안 권장)
+4. 권한 설정 (조회, 거래, 입출금)
+
+### 인증 방식
+
+Private API는 JWT 토큰을 사용하여 인증합니다.
+
+```python
+import fsfupbit
+
+# Access Key와 Secret Key로 인증
+upbit = fsfupbit.Upbit(access_key, secret_key)
+```
+
+fsfupbit가 내부적으로 JWT 토큰을 생성하고 요청 헤더에 포함합니다.
+
+---
+
+## Rate Limit
+
+| API 그룹 | 제한 | 단위 |
+|----------|------|------|
+| 시세 조회 (Quotation) | 10회/초 | IP |
+| Exchange 기본 그룹 | 30회/초 | 계정 |
+| 주문 생성 그룹 | 8회/초 | 계정 |
+| 주문 테스트 그룹 | 8회/초 | 계정 |
+
+### Rate Limit 정보 확인
+
+```python
+# limit_info=True로 Rate Limit 정보 확인
+tickers, limit_info = fsfupbit.get_tickers(limit_info=True)
+print(limit_info)
+# {'group': 'market', 'interval': 'sec', 'remaining': '598', ...}
+```
+
+---
+
 ## 시세 조회 API
+
+시세 조회 API는 인증 없이 사용할 수 있는 Public API입니다.
 
 ### get_tickers
 
@@ -66,17 +148,17 @@ krw_tickers = fsfupbit.get_tickers(fiat="KRW")
 
 # 상세 정보
 markets = fsfupbit.get_tickers(is_details=True)
-# [{'market': 'KRW-BTC', 'korean_name': '비트코인', ...}]
+# [{'market': 'KRW-BTC', 'korean_name': '비트코인', 'english_name': 'Bitcoin', ...}]
 
 # Rate Limit 정보 포함
 tickers, limit_info = fsfupbit.get_tickers(limit_info=True)
 print(limit_info)
-# {'group': 'market', 'interval': 'sec', 'remaining': '598', ...}
+# {'group': 'market', 'interval': 'sec', 'remaining': '598', 'limit': '600', ...}
 ```
 
 **API Reference:**
 - [Upbit API - 마켓 코드 조회](https://docs.upbit.com/reference/%EB%A7%88%EC%BC%93-%EC%BD%94%EB%93%9C-%EC%A1%B0%ED%9A%8C)
-- [Upbit API Review - market_all](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/market_all.md)
+- [Upbit API Review - market_all](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/market_all.md)
 
 ---
 
@@ -122,12 +204,13 @@ print(prices)  # {'KRW-BTC': 95000000.0, 'KRW-ETH': 3500000.0}
 # 전체 응답
 data = fsfupbit.get_current_price("KRW-BTC", verbose=True)
 print(data)
-# [{'market': 'KRW-BTC', 'trade_date': '20260129', 'trade_time': '123456', 'trade_price': 95000000, ...}]
+# [{'market': 'KRW-BTC', 'trade_date': '20260129', 'trade_time': '123456', 'trade_price': 95000000,
+#   'opening_price': 94000000, 'high_price': 96000000, 'low_price': 93000000, ...}]
 ```
 
 **API Reference:**
 - [Upbit API - 현재가 정보](https://docs.upbit.com/reference/%ED%98%84%EC%9E%AC%EA%B0%80-%EC%A0%95%EB%B3%B4)
-- [Upbit API Review - ticker](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/ticker.md)
+- [Upbit API Review - ticker](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/ticker.md)
 
 ---
 
@@ -206,7 +289,53 @@ df = fsfupbit.get_ohlcv("BTC-ETH", interval="day", converting_price_unit="BTC")
 
 **API Reference:**
 - [Upbit API - 캔들 조회](https://docs.upbit.com/reference/%EC%BA%94%EB%93%A4-%EC%A1%B0%ED%9A%8C)
-- [Upbit API Review - candles](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/candles.md)
+- [Upbit API Review - candles](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/candles.md)
+
+---
+
+### get_ohlcv_from
+
+특정 기간의 캔들 데이터를 조회합니다.
+
+```python
+get_ohlcv_from(
+    ticker: str,
+    interval: str = "day",
+    fromDatetime: Union[str, datetime] = "2020-01-01 00:00:00",
+    to: Optional[Union[str, datetime]] = None,
+    count: int = 200
+) -> pd.DataFrame
+```
+
+**Parameters:**
+
+| 파라미터 | 타입 | 기본값 | 설명 |
+|----------|------|--------|------|
+| `ticker` | str | - | 티커 |
+| `interval` | str | `"day"` | 캔들 종류 |
+| `fromDatetime` | str, datetime | `"2020-01-01 00:00:00"` | 시작 일시 |
+| `to` | Optional[str, datetime] | `None` | 종료 일시 (기본값: 현재) |
+| `count` | int | `200` | 한 번에 가져올 최대 개수 |
+
+**Examples:**
+
+```python
+# 특정 기간 조회
+df = fsfupbit.get_ohlcv_from(
+    "KRW-BTC",
+    interval="day",
+    fromDatetime="2026-01-01 00:00:00",
+    to="2026-01-31 00:00:00"
+)
+
+# datetime 객체 사용
+from datetime import datetime
+df = fsfupbit.get_ohlcv_from(
+    "KRW-BTC",
+    interval="minute15",
+    fromDatetime=datetime(2026, 1, 29, 0, 0, 0)
+)
+```
 
 ---
 
@@ -246,13 +375,28 @@ get_orderbook(
 | `5` | 100,000원 단위 | KRW 마켓 |
 | 사용자 지정 | 10000, 5000 등 | KRW 마켓 |
 
+**Returns:**
+
+```python
+{
+    'market': 'KRW-BTC',
+    'timestamp': 1532118943687,
+    'total_ask_size': 12.345,  # 매도 총 잔량
+    'total_bid_size': 23.456,  # 매수 총 잔량
+    'orderbook_units': [
+        {'ask_price': 95100000, 'bid_price': 95000000, 'ask_size': 0.1, 'bid_size': 0.5},
+        # ... 15호까지
+    ]
+}
+```
+
 **Examples:**
 
 ```python
 # 기본 호가
 orderbook = fsfupbit.get_orderbook("KRW-BTC")
-print(orderbook)
-# {'market': 'KRW-BTC', 'timestamp': 1532118943687, 'orderbook_units': [...]}
+print(orderbook['orderbook_units'][0])
+# {'ask_price': 95100000, 'bid_price': 95000000, 'ask_size': 0.1, 'bid_size': 0.5}
 
 # 호가 모아보기 (1만원 단위) ⭐ NEW
 orderbook = fsfupbit.get_orderbook("KRW-BTC", level=10000)
@@ -264,7 +408,7 @@ print(orderbooks)
 
 **API Reference:**
 - [Upbit API - 호가 정보 조회](https://docs.upbit.com/reference/%ED%98%B8%EA%B0%80-%EC%A0%95%EB%B3%B4-%EC%A1%B0%ED%9A%8C)
-- [Upbit API Review - orderbook_levels](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/orderbook_levels.md)
+- [Upbit API Review - orderbook_levels](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/orderbook_levels.md)
 
 ---
 
@@ -306,6 +450,14 @@ print(levels)
 #     {'market': 'KRW-ETH', 'supported_levels': [0, 1, 2, 3, 4, 5]},
 #     {'market': 'BTC-ETH', 'supported_levels': [0]}
 # ]
+
+# 지원하는 레벨로 호가 조회
+for market_info in levels:
+    market = market_info['market']
+    for level in market_info['supported_levels']:
+        if level > 0:  # 레벨이 있는 경우만 모아보기
+            orderbook = fsfupbit.get_orderbook(market, level=level)
+            print(f"{market} level {level}: {orderbook}")
 ```
 
 **Raises:**
@@ -315,11 +467,13 @@ print(levels)
 | `ValueError` | markets가 빈 리스트이거나 유효하지 않은 경우 |
 
 **API Reference:**
-- [Upbit API Review - orderbook_levels](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/orderbook_levels.md)
+- [Upbit API Review - orderbook_levels](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/orderbook_levels.md)
 
 ---
 
 ## 거래/자산 관리 API
+
+거래소 API를 사용하기 위해서는 API Key 인증이 필요합니다.
 
 ### Upbit 클래스
 
@@ -335,6 +489,18 @@ upbit = Upbit(access_key: str, secret_key: str)
 |----------|------|------|
 | `access_key` | str | Upbit API Access Key |
 | `secret_key` | str | Upbit API Secret Key |
+
+**Example:**
+
+```python
+import os
+import fsfupbit
+
+access = os.getenv("UPBIT_ACCESS_KEY")
+secret = os.getenv("UPBIT_SECRET_KEY")
+
+upbit = fsfupbit.Upbit(access, secret)
+```
 
 ---
 
@@ -376,6 +542,95 @@ print(krw)  # 1000000.0
 # 비트코인 잔고
 btc = upbit.get_balance("BTC")
 print(btc)  # 0.5
+
+# 사용 가능한 원화만 조회 (주문 가능 금액)
+# 잔고에서 출금 중인 금액을 제외한 실제 사용 가능 금액
+```
+
+**Returns Details:**
+
+반환되는 잔고는 사용 가능한 금액입니다. 출금 대기 중인 금액은 포함되지 않습니다.
+
+---
+
+### get_order
+
+주문 내역을 조회합니다. 다중 상태 조회를 지원합니다. ⭐ (PR #114 구현)
+
+**API Endpoint**: `GET /v1/orders`
+
+```python
+get_order(
+    market: Optional[str] = None,
+    state: Union[str, List[str]] = "wait",
+    uuids: Optional[List[str]] = None,
+    identifier: Optional[str] = None
+) -> List[Dict]
+```
+
+**Parameters:**
+
+| 파라미터 | 타입 | 기본값 | 설명 |
+|----------|------|--------|------|
+| `market` | Optional[str] | `None` | 마켓 코드 |
+| `state` ⭐ NEW | Union[str, List[str]] | `"wait"` | 주문 상태 (단일 또는 복수) |
+| `uuids` | Optional[List[str]] | `None` | 주문 UUID 리스트 |
+| `identifier` | Optional[str] | `None` | 사용자 식별자 |
+
+**State Options:**
+
+| 값 | 설명 |
+|-----|------|
+| `wait` | 미체결 |
+| `watch` | 예약주문 (배치 중) |
+| `done` | 체결 완료 |
+| `cancel` | 취소 완료 |
+
+**다중 상태 조회 ⭐ NEW:**
+
+시장가 주문 후 체결과 취소가 동시에 발생할 수 있습니다. 이 경우 다중 상태를 한 번에 조회할 수 있습니다.
+
+```python
+# 단일 상태 조회
+orders = upbit.get_order("KRW-BTC", state='done')
+
+# 다중 상태 조회 ⭐ NEW (2024년 추가)
+orders = upbit.get_order("KRW-BTC", state=['done', 'cancel'])
+```
+
+**Returns:**
+
+```python
+[
+    {
+        'uuid': 'order-uuid',
+        'market': 'KRW-BTC',
+        'side': 'bid',  # bid: 매수, ask: 매도
+        'state': 'wait',  # wait, watch, done, cancel
+        'ord_type': 'limit',  # limit, price, market, best
+        'price': 95000000,
+        'avg_price': 0,  # 체결 가격 평균
+        'volume': 0.001,
+        'remaining_volume': 0.001,  # 남은 수량
+        'reserved_fee': 47.5,  # 수수료
+        'remaining_fee': 47.5,
+        'created_at': '2026-01-29T12:00:00+09:00',
+        ...
+    }
+]
+```
+
+**Examples:**
+
+```python
+# 미체결 주문 조회
+wait_orders = upbit.get_order("KRW-BTC", state="wait")
+
+# 체결 완료와 취소 완료 동시 조회 ⭐ NEW
+orders = upbit.get_order("KRW-BTC", state=['done', 'cancel'])
+
+# 특정 주문 UUID로 조회
+order = upbit.get_order(uuids=["order-uuid-1", "order-uuid-2"])
 ```
 
 ---
@@ -424,12 +679,32 @@ sell_limit_order(
 | `FOK` | Fill Or Kill - 체결 즉시 가능 여부 |
 | `MAK` | Maker Or Kill - 즉시 체결 없으면 취소 (수수료 면제) |
 
+**Returns:**
+
+```python
+{
+    'uuid': 'order-uuid',
+    'market': 'KRW-BTC',
+    'side': 'bid',  # bid: 매수, ask: 매도
+    'state': 'wait',  # wait, watch, done, cancel
+    'ord_type': 'limit',
+    'price': '95000000',
+    'avg_price': '0',
+    'volume': '0.001',
+    'remaining_volume': '0.001',
+    'reserved_fee': '47.5',
+    'remaining_fee': '47.5',
+    'created_at': '2026-01-29T12:00:00+09:00',
+    ...
+}
+```
+
 **Examples:**
 
 ```python
 # 기본 지정가 매수
 order = upbit.buy_limit_order("KRW-BTC", 0.001, 95000000)
-print(order)
+print(order['uuid'])  # 주문 UUID
 
 # MAK 주문 (수수료 면제) ⭐ NEW
 order = upbit.buy_limit_order(
@@ -438,10 +713,99 @@ order = upbit.buy_limit_order(
     95000000,
     time_in_force="MAK"
 )
+
+# 사용자 식별자 지정
+order = upbit.sell_limit_order(
+    "KRW-BTC",
+    0.001,
+    96000000,
+    identifier="my-order-001"
+)
 ```
 
 **API Reference:**
-- [Upbit API Review - orders](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/orders.md)
+- [Upbit API Review - orders](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/orders.md)
+
+---
+
+### buy_market_order / sell_market_order
+
+시장가 매수/매도 주문을 실행합니다.
+
+**API Endpoint**: `POST /v1/orders`
+
+```python
+buy_market_order(
+    market: str,
+    volume: Union[float, str],
+    identifier: Optional[str] = None
+) -> Dict
+
+sell_market_order(
+    market: str,
+    volume: Union[float, str],
+    identifier: Optional[str] = None
+) -> Dict
+```
+
+**Parameters:**
+
+| 파라미터 | 타입 | 설명 |
+|----------|------|------|
+| `market` | str | 마켓 코드 |
+| `volume` | float, str | 주문 수량 |
+| `identifier` | Optional[str] | 사용자 식별자 |
+
+**Examples:**
+
+```python
+# 시장가 매수 (지정가 매수와 달리 호가 우선 주문)
+order = upbit.buy_market_order("KRW-BTC", 0.001)
+
+# 시장가 매도
+order = upbit.sell_market_order("KRW-BTC", 0.001)
+```
+
+---
+
+### cancel_order
+
+주문을 취소합니다.
+
+**API Endpoint**: `DELETE /v1/orders`
+
+```python
+cancel_order(uuid: Optional[str] = None, identifier: Optional[str] = None) -> Dict
+```
+
+**Parameters:**
+
+| 파라미터 | 타입 | 설명 |
+|----------|------|------|
+| `uuid` | Optional[str] | 취소할 주문 UUID |
+| `identifier` | Optional[str] | 취소할 주문 식별자 |
+
+`uuid` 또는 `identifier` 둘 중 하나는 필수입니다.
+
+**Returns:**
+
+```python
+{
+    'uuid': 'order-uuid',
+    'state': 'cancel',
+    ...
+}
+```
+
+**Examples:**
+
+```python
+# UUID로 취소
+result = upbit.cancel_order(uuid="order-uuid")
+
+# 식별자로 취소
+result = upbit.cancel_order(identifier="my-order-001")
+```
 
 ---
 
@@ -493,7 +857,10 @@ result = upbit.test_order(
     volume=0.001,
     price=95000000
 )
-print(result)
+if result['orderable']:
+    print("주문 가능합니다.")
+else:
+    print("주문 불가능합니다.")
 ```
 
 ---
@@ -526,7 +893,7 @@ cancel_orders_open(market: str) -> List[Dict]
 ```python
 # KRW-BTC 미체결 주문 모두 취소
 canceled = upbit.cancel_orders_open("KRW-BTC")
-print(canceled)
+print(f"{len(canceled)}개 주문 취소됨")
 ```
 
 ---
@@ -559,6 +926,20 @@ new_order = upbit.cancel_and_new_order(
     uuid="old-order-uuid",
     new_price=96000000
 )
+print(new_order)
+
+# 수량 변경
+new_order = upbit.cancel_and_new_order(
+    uuid="old-order-uuid",
+    new_volume=0.002
+)
+
+# 가격과 수량 모두 변경
+new_order = upbit.cancel_and_new_order(
+    uuid="old-order-uuid",
+    new_price=96000000,
+    new_volume=0.002
+)
 ```
 
 ---
@@ -577,12 +958,29 @@ new_order = upbit.cancel_and_new_order(
 get_deposit_chance(currency: str) -> Dict
 ```
 
+**Parameters:**
+
+| 파라미터 | 타입 | 설명 |
+|----------|------|------|
+| `currency` | str | 코인 심볼 (예: "BTC") |
+
+**Returns:**
+
+```python
+{
+    'currency': 'BTC',
+    'deposit_wallet_address': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+    'deposit_available': True,
+    'net_type': 'BTC'
+}
+```
+
 **Examples:**
 
 ```python
 chance = upbit.get_deposit_chance("BTC")
-print(chance)
-# {'currency': 'BTC', 'deposit_wallet_address': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 'deposit_available': True}
+if chance['deposit_available']:
+    print(f"입금 주소: {chance['deposit_wallet_address']}")
 ```
 
 ---
@@ -594,15 +992,36 @@ print(chance)
 **API Endpoint:** `POST /v1/deposits/generate_coin_address`
 
 ```python
-create_deposit_address(currency: str) -> Dict
+create_deposit_address(currency: str, net_type: Optional[str] = None) -> Dict
+```
+
+**Parameters:**
+
+| 파라미터 | 타입 | 설명 |
+|----------|------|------|
+| `currency` | str | 코인 심볼 |
+| `net_type` | Optional[str] | 네트워크 타입 (다중 네트워크 지원 코인) |
+
+**Returns:**
+
+```python
+{
+    'currency': 'BTC',
+    'deposit_address': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+    'secondary_address': '',
+    'success': True
+}
 ```
 
 **Examples:**
 
 ```python
+# 기본 입금 주소 생성
 address = upbit.create_deposit_address("BTC")
-print(address)
-# {'currency': 'BTC', 'deposit_address': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 'success': True}
+print(address['deposit_address'])
+
+# 특정 네트워크 타입으로 생성 (다중 네트워크 지원 코인)
+address = upbit.create_deposit_address("ETH", net_type="ETH")
 ```
 
 ---
@@ -614,15 +1033,31 @@ print(address)
 **API Endpoint:** `GET /v1/deposits/coin_address`
 
 ```python
-get_deposit_address(currency: str) -> Dict
+get_deposit_address(currency: str, net_type: Optional[str] = None) -> Dict
+```
+
+**Parameters:**
+
+| 파라미터 | 타입 | 설명 |
+|----------|------|------|
+| `currency` | str | 코인 심볼 |
+| `net_type` | Optional[str] | 네트워크 타입 |
+
+**Returns:**
+
+```python
+{
+    'currency': 'BTC',
+    'deposit_address': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+    'secondary_address': ''
+}
 ```
 
 **Examples:**
 
 ```python
 addr = upbit.get_deposit_address("BTC")
-print(addr)
-# {'currency': 'BTC', 'deposit_address': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 'secondary_address': ''}
+print(f"비트코인 입금 주소: {addr['deposit_address']}")
 ```
 
 ---
@@ -637,12 +1072,22 @@ print(addr)
 get_deposit_addresses() -> List[Dict]
 ```
 
+**Returns:**
+
+```python
+[
+    {'currency': 'BTC', 'deposit_address': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', 'net_type': 'BTC'},
+    {'currency': 'ETH', 'deposit_address': '0x...', 'net_type': 'ETH'},
+    {'currency': 'XRP', 'deposit_address': 'r...', 'secondary_address': '123456789', 'net_type': 'XRP'}
+]
+```
+
 **Examples:**
 
 ```python
 addrs = upbit.get_deposit_addresses()
-print(addrs)
-# [{'currency': 'BTC', 'deposit_address': '...'}, {'currency': 'ETH', 'deposit_address': '0x...'}]
+for addr in addrs:
+    print(f"{addr['currency']}: {addr['deposit_address']}")
 ```
 
 ---
@@ -657,16 +1102,31 @@ print(addrs)
 get_krw_deposit_info() -> Dict
 ```
 
+**Returns:**
+
+```python
+{
+    'bank': 'Shinhan Bank',
+    'account_number': '123-456-789012',
+    'depositor': 'TEST',
+    'processing_hours': {
+        'start': '08:30',
+        'end': '17:00'
+    }
+}
+```
+
 **Examples:**
 
 ```python
 info = upbit.get_krw_deposit_info()
-print(info)
-# {'bank': 'Shinhan Bank', 'account_number': '123-456-789012', 'depositor': 'TEST'}
+print(f"은행: {info['bank']}")
+print(f"계좌번호: {info['account_number']}")
+print(f"예금주: {info['depositor']}")
 ```
 
 **API Reference:**
-- [Upbit API Review - deposits](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/deposits.md)
+- [Upbit API Review - deposits](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/deposits.md)
 
 ---
 
@@ -698,26 +1158,26 @@ withdraw_coin(
 | `amount` | float, str | 출금 수량 |
 | `address` | str | 출금 주소 |
 | `net_type` ⚠️ | str | **필수** 네트워크 타입 (보안 강화) |
-| `secondary_address` | Optional[str] | 2차 주소 |
+| `secondary_address` | Optional[str] | 2차 주소 (XRP 등 필요시) |
 | `transaction_type` | str | 거래 유형 |
 | `contain_req` | bool | 요청 정보 포함 여부 |
 
 **⚠️ Breaking Change (보안 강화):**
+
 `net_type`은 필수 파라미터입니다. 자산 손실 방지를 위해 출금하려는 코인이 지원하는 네트워크 타입을 반드시 확인해야 합니다.
 
-**Examples:**
+**Returns:**
 
 ```python
-# 변경 전 (pyupbit 0.2.34) - 보안 위험 ⚠️
-# upbit.withdraw_coin("BTC", 0.1, "address...")
-
-# 변경 후 (fsfupbit 1.0.0) - 보안 강화 ✅
-upbit.withdraw_coin(
-    "BTC",
-    0.1,
-    "bc1q...",
-    net_type="BTC"  # 필수! 자산 손실 방지
-)
+{
+    'uuid': 'withdraw-uuid',
+    'currency': 'BTC',
+    'net_type': 'BTC',
+    'amount': '0.1',
+    'fee': '0.0005',
+    'state': 'processing',  # processing, submitted, almost_accepted, accepted, rejected, canceled
+    ...
+}
 ```
 
 **net_type Examples:**
@@ -729,8 +1189,33 @@ upbit.withdraw_coin(
 | XRP | `XRP` | Ripple 네트워크 (Tag 필요 시 secondary_address) |
 | TRX | `TRX` | TRON 네트워크 |
 
+**Examples:**
+
+```python
+# 변경 전 (pyupbit 0.2.34) - 보안 위험 ⚠️
+# upbit.withdraw_coin("BTC", 0.1, "address...")
+
+# 변경 후 (fsfupbit 1.0.0) - 보안 강화 ✅
+result = upbit.withdraw_coin(
+    "BTC",
+    0.1,
+    "bc1q...",
+    net_type="BTC"  # 필수! 자산 손실 방지
+)
+print(f"출금 UUID: {result['uuid']}")
+
+# XRP 출금 (2차 주소 필요)
+result = upbit.withdraw_coin(
+    "XRP",
+    100,
+    "r...",
+    net_type="XRP",
+    secondary_address="123456789"
+)
+```
+
 **API Reference:**
-- [Upbit API Review - withdrawals](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/withdrawals.md)
+- [Upbit API Review - withdrawals](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/withdrawals.md)
 
 ---
 
@@ -744,12 +1229,36 @@ upbit.withdraw_coin(
 get_withdraw_chance(currency: str, amount: Union[float, str]) -> Dict
 ```
 
+**Parameters:**
+
+| 파라미터 | 타입 | 설명 |
+|----------|------|------|
+| `currency` | str | 코인 심볼 |
+| `amount` | float, str | 출금 수량 |
+
+**Returns:**
+
+```python
+{
+    'currency': 'BTC',
+    'withdraw_available': True,
+    'withdraw_fee': '0.0005',
+    'net_type': 'BTC',
+    'withdraw_limit': {
+        'minimum': '0.0001',
+        'daily': '10'
+    }
+}
+```
+
 **Examples:**
 
 ```python
 chance = upbit.get_withdraw_chance("BTC", 0.01)
-print(chance)
-# {'currency': 'BTC', 'withdraw_available': True, 'withdraw_fee': 0.0005}
+if chance['withdraw_available']:
+    print(f"출금 가능: 수수료 {chance['withdraw_fee']} BTC")
+else:
+    print("출금 불가능")
 ```
 
 ---
@@ -764,6 +1273,26 @@ print(chance)
 get_withdraw_addresses(currency: Optional[str] = None) -> List[Dict]
 ```
 
+**Parameters:**
+
+| 파라미터 | 타입 | 설명 |
+|----------|------|------|
+| `currency` | Optional[str] | 코인 심볼 (None: 전체) |
+
+**Returns:**
+
+```python
+[
+    {
+        'currency': 'BTC',
+        'net_type': 'BTC',
+        'address': 'bc1q...',
+        'address_type': 'general',  # general, whitelist
+        'created_at': '2026-01-01T00:00:00+09:00'
+    }
+]
+```
+
 **Examples:**
 
 ```python
@@ -772,6 +1301,8 @@ all_addrs = upbit.get_withdraw_addresses()
 
 # 특정 코인 출금 허용 주소
 btc_addrs = upbit.get_withdraw_addresses("BTC")
+for addr in btc_addrs:
+    print(f"{addr['net_type']}: {addr['address']}")
 ```
 
 ---
@@ -801,9 +1332,33 @@ ws = WebSocketManager(type: str, codes: List[str])
 ws = fsfupbit.WebSocketManager("ticker", ["KRW-BTC", "KRW-ETH"])
 ws.start()
 
-while True:
-    data = ws.get()
-    print(data)
+try:
+    while True:
+        data = ws.get()
+        print(data)
+        # {'market': 'KRW-BTC', 'trade_price': 95000000, ...}
+finally:
+    ws.terminate()
+```
+
+**WebSocket Data Format (ticker):**
+
+```python
+{
+    'market': 'KRW-BTC',
+    'trade_date': '20260129',
+    'trade_time': '123456',
+    'trade_price': 95000000,
+    'opening_price': 94000000,
+    'high_price': 96000000,
+    'low_price': 93000000,
+    'prev_closing_price': 94000000,
+    'change': 'RISE',  # RISE, FALL, EVEN
+    'change_price': 1000000,
+    'change_rate': 0.0106,
+    'ask_bid': 'ASK',  # ASK: 매도, BID: 매수
+    'volume': 123.456,
+}
 ```
 
 ---
@@ -841,13 +1396,35 @@ pwm = fsfupbit.PrivateWebSocketManager(
 )
 pwm.start()
 
-while True:
-    data = pwm.get()
-    print(data)
+try:
+    while True:
+        data = pwm.get()
+        print(data)
+        # {'order_uuid': 'xxx', 'market': 'KRW-BTC', 'state': 'done', ...}
+finally:
+    pwm.terminate()
+```
+
+**PrivateWebSocket Data Format (MyOrder):**
+
+```python
+{
+    'order_uuid': 'order-uuid',
+    'market': 'KRW-BTC',
+    'side': 'bid',  # bid: 매수, ask: 매도
+    'state': 'done',  # wait, watch, done, cancel
+    'ord_type': 'limit',
+    'price': '95000000',
+    'avg_price': '95000000',
+    'volume': '0.001',
+    'remaining_volume': '0',
+    'created_at': '2026-01-29T12:00:00+09:00',
+    'filled_at': '2026-01-29T12:00:05+09:00'
+}
 ```
 
 **API Reference:**
-- [Upbit API Review - websocket](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/websocket.md)
+- [Upbit API Review - websocket](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/websocket.md)
 
 ---
 
@@ -863,12 +1440,25 @@ while True:
 get_travel_rule_vasps() -> List[Dict]
 ```
 
+**Returns:**
+
+```python
+[
+    {
+        'name': 'Binance',
+        'country': 'Malta',
+        'url': 'https://www.binance.com',
+        'vasp_address': 'MZPaXv4P6o...'
+    }
+]
+```
+
 **Examples:**
 
 ```python
 vasps = upbit.get_travel_rule_vasps()
-print(vasps)
-# [{'name': 'Binance', 'country': 'Malta', 'url': 'https://www.binance.com'}, ...]
+for vasp in vasps:
+    print(f"{vasp['name']} ({vasp['country']})")
 ```
 
 ---
@@ -887,6 +1477,14 @@ verify_travel_rule_by_uuid(
 ) -> Dict
 ```
 
+**Parameters:**
+
+| 파라미터 | 타입 | 설명 |
+|----------|------|------|
+| `deposit_uuid` | str | 입금 UUID |
+| `vasp_name` | str | VASP(거래소) 이름 |
+| `vasp_address` | str | VASP 주소 |
+
 **Examples:**
 
 ```python
@@ -899,7 +1497,7 @@ print(result)
 ```
 
 **API Reference:**
-- [Upbit API Review - services](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/upbit_apis/services.md)
+- [Upbit API Review - services](https://github.com/urstory/enjoyTrading/blob/main/docs/upbit_apis/services.md)
 
 ---
 
@@ -917,7 +1515,7 @@ from fsfupbit.errors import (
 )
 ```
 
-#### UpbitAPIError
+### UpbitAPIError
 
 API 호출 에러
 
@@ -930,7 +1528,17 @@ except UpbitAPIError as e:
     print(f"응답: {e.response}")
 ```
 
-#### UpbitValidationError
+**Attributes:**
+
+| 속성 | 타입 | 설명 |
+|------|------|------|
+| `message` | str | 에러 메시지 |
+| `status_code` | int | HTTP 상태 코드 |
+| `response` | Dict | API 응답 |
+
+---
+
+### UpbitValidationError
 
 입력값 검증 에러
 
@@ -942,7 +1550,16 @@ except UpbitValidationError as e:
     print(f"필드: {e.field}")
 ```
 
-#### UpbitOrderError
+**Attributes:**
+
+| 속성 | 타입 | 설명 |
+|------|------|------|
+| `message` | str | 에러 메시지 |
+| `field` | str | 에러 발생 필드 |
+
+---
+
+### UpbitOrderError
 
 주문 관련 에러
 
@@ -955,11 +1572,24 @@ except UpbitOrderError as e:
     print(f"주문 종류: {e.order_side}")
 ```
 
+**Attributes:**
+
+| 속성 | 타입 | 설명 |
+|------|------|------|
+| `message` | str | 에러 메시지 |
+| `order_uuid` | str | 주문 UUID |
+| `order_side` | str | 주문 종류 (bid/ask) |
+
 ---
 
 ## References
 
 - [Upbit Open API Documentation](https://docs.upbit.com)
 - [pyupbit Original Repository](https://github.com/sharebook-kr/pyupbit)
-- [Upbit API Review Notes](https://github.com/fullstack-research-lab/enjoyTrading/tree/main/docs/upbit_apis_reviews)
-- [fsfupbit Development Plan](https://github.com/fullstack-research-lab/enjoyTrading/blob/main/docs/fsfupbit_plan.md)
+- [Upbit API Review Notes](https://github.com/urstory/enjoyTrading/tree/main/docs/upbit_apis)
+- [fsfupbit GitHub Repository](https://github.com/urstory/fsfupbit)
+
+---
+
+**© 2026 풀스택패밀리 연구소**
+*Based on pyupbit by sharebook-kr (Apache License 2.0)*
