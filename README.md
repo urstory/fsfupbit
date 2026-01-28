@@ -2,7 +2,6 @@
 
 > Enhanced Python wrapper for Upbit API - A maintained fork of pyupbit
 
-[![PyPI version](https://badge.fury.io/py/fsfupbit)](https://badge.fury.io/pyfupbit)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -12,7 +11,7 @@
 
 ## ⚠️ About This Fork (이 포크에 대하여)
 
-**fsfupbit**은 [pyupbit](https://github.com/sharebook-kr/pyupbit)를 기반으로 **풀스택패밀리 연구소 (Full Stack Research Lab)**가 유지보수하는 포크 버전입니다.
+**fsfupbit**은 [pyupbit](https://github.com/sharebook-kr/pyupbit)를 기반으로 **풀스택패밀리 연구소 (Full Stack Research Lab)** 가 유지보수하는 포크 버전입니다.
 
 ### 포크 사유 (Why We Forked)
 
@@ -106,6 +105,52 @@ upbit = Upbit(access, secret)
 2. **키 rotation**: 주기적으로 API 키를 변경하세요
 3. **IP 허용**: Upbit 개발자 페이지에서 접속 가능한 IP를 제한하세요
 4. **권한 최소화**: 필요한 권한만 부여하세요 (거래/조회 등)
+
+---
+
+## 🚀 PyPI 배포 (Publishing)
+
+### 자동 배포 설정 완료 ✅
+
+GitHub Actions를 통해 자동으로 PyPI 배포가 설정되었습니다.
+
+#### 배포 절차
+
+1. **PyPI 계정 및 API Token 생성**
+   ```bash
+   # 1. PyPI 계정 생성: https://pypi.org/account/register/
+   # 2. API Token 생성: https://pypi.org/manage/account/token/
+   #    - Scope: "Entire account"
+   #    - 생성된 토큰 복사 (pypi-...)
+   ```
+
+2. **GitHub Secret 등록**
+   - GitHub 저장소 접속: https://github.com/urstory/fsfupbit/settings/secrets
+   - "New repository secret" 클릭
+   - Name: `PYPI_API_TOKEN`
+   - Value: 생성한 PyPI API 토큰
+
+3. **태그 생성 및 푸시**
+   ```bash
+   # 버전 태그 생성
+   git tag v1.0.0
+
+   # GitHub에 푸시 (자동으로 PyPI 배포됨)
+   git push origin v1.0.0
+   ```
+
+#### 자동 배포 workflow
+
+- `.github/workflows/publish.yml`에서 자동화됨
+- 태그 생성 시 자동으로:
+  1. 패키지 빌드
+  2. 패키지 검증
+  3. PyPI에 업로드
+
+#### 상태 확인
+
+- 배포 상태: https://github.com/urstory/fsfupbit/actions
+- PyPI 패키지: https://pypi.org/project/fsfupbit/ (배포 후)
 
 ---
 
