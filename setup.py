@@ -22,7 +22,7 @@ with open("README.md", "r", encoding='UTF-8') as fh:
 
 setuptools.setup(
     name='fsfupbit',
-    version='1.0.0',
+    version='1.0.1',
     author='Full Stack Research Lab (풀스택연구소)',
     author_email='contact@fullstack.re.kr',
     description='Enhanced Python wrapper for Upbit API with additional features (Based on pyupbit)',
