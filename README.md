@@ -12,7 +12,7 @@
 
 ## ⚠️ About This Fork (이 포크에 대하여)
 
-**fsfupbit**은 [pyupbit](https://github.com/sharebook-kr/pyupbit)를 기반으로 **풀스택패밀리 연구소 (Full Stack Research Lab)** 가 유지보수하는 포크 버전입니다.
+**fsfupbit**은 [pyupbit](https://github.com/sharebook-kr/pyupbit)를 기반으로 **풀스택패밀리 연구소**가 유지보수하는 포크 버전입니다.
 
 ### 포크 사유 (Why We Forked)
 
@@ -224,7 +224,7 @@ limitations under the License.
 ```
 
 **Original Copyright (c) 2021 sharebook-kr (pyupbit)**
-**Modifications Copyright (c) 2025 Full Stack Research Lab (풀스택연구소)**
+**Modifications Copyright (c) 2025 풀스택패밀리 연구소**
 
 ---
 
@@ -240,7 +240,7 @@ limitations under the License.
 
 ## 📞 Contact (연락처)
 
-**Full Stack Research Lab (풀스택패밀리 연구소)**
+**풀스택패밀리 연구소**
 
 - Website: https://www.fullstackfamily.com/
 - GitHub: https://github.com/urstory/fsfupbit

@@ -318,5 +318,5 @@ pyupbit의 PR과 관련된 문제나 fsfupbit 사용 중遇到的 문제는:
 
 ---
 
-**© 2026 Full Stack Research Lab (풀스택연구소)**
+**© 2026 풀스택패밀리 연구소**
 *Based on pyupbit by sharebook-kr (Apache License 2.0)*

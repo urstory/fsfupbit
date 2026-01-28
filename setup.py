@@ -1,11 +1,11 @@
 #
 # fsfupbit - Enhanced Python wrapper for Upbit API
 # Based on pyupbit (https://github.com/sharebook-kr/pyupbit)
-# Modified by Full Stack Research Lab (풀스택연구소)
+# Modified by 풀스택패밀리 연구소
 #
 # Licensed under the Apache License, Version 2.0
 # Original Copyright (c) 2021 sharebook-kr
-# Modifications Copyright (c) 2025 Full Stack Research Lab
+# Modifications Copyright (c) 2025 풀스택패밀리 연구소
 #
 
 import setuptools
@@ -23,7 +23,7 @@ with open("README.md", "r", encoding='UTF-8') as fh:
 setuptools.setup(
     name='fsfupbit',
     version='1.0.1',
-    author='Full Stack Research Lab (풀스택연구소)',
+    author='풀스택패밀리 연구소',
     author_email='contact@fullstack.re.kr',
     description='Enhanced Python wrapper for Upbit API with additional features (Based on pyupbit)',
     long_description=long_description,

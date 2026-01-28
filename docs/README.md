@@ -9,7 +9,7 @@
 
 ## ⚠️ About This Fork
 
-**fsfupbit**은 [pyupbit](https://github.com/sharebook-kr/pyupbit)를 기반으로 **풀스택패밀리 연구소 (Full Stack Research Lab)**가 유지보수하는 포크 버전입니다.
+**fsfupbit**은 [pyupbit](https://github.com/sharebook-kr/pyupbit)를 기반으로 **풀스택패밀리 연구소**가 유지보수하는 포크 버전입니다.
 
 ### 포크 사유 (Why We Forked)
 
@@ -232,14 +232,14 @@ upbit.withdraw_coin("BTC", 0.1, "address...", net_type="BTC")
 Apache License, Version 2.0
 
 **Original Copyright (c) 2021 sharebook-kr (pyupbit)**
-**Modifications Copyright (c) 2025 Full Stack Research Lab (풀스택연구소)**
+**Modifications Copyright (c) 2025 풀스택패밀리 연구소**
 ```
 
 ---
 
 ## 📞 Contact
 
-**Full Stack Research Lab (풀스택패밀리 연구소)**
+**풀스택패밀리 연구소**
 
 - Website: https://www.fullstackfamily.com/
 - GitHub: https://github.com/urstory/fsfupbit

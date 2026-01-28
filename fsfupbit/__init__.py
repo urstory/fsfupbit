@@ -3,7 +3,7 @@
 #
 # Based on pyupbit (https://github.com/sharebook-kr/pyupbit)
 # Original Copyright (c) 2021 sharebook-kr
-# Modifications Copyright (c) 2025 Full Stack Research Lab (풀스택연구소)
+# Modifications Copyright (c) 2025 풀스택패밀리 연구소
 #
 # Licensed under the Apache License, Version 2.0
 # See LICENSE file for the full text of the license.
@@ -17,7 +17,7 @@ pyupbit를 기반으로 하여 최신 API 기능을 추가하고 코드 품질�
 """
 
 __version__ = "1.0.0"
-__author__ = "Full Stack Research Lab (풀스택연구소)"
+__author__ = "풀스택패밀리 연구소"
 
 from .quotation_api import (
     get_tickers,

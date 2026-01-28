@@ -3,7 +3,7 @@
 #
 # Based on pyupbit (https://github.com/sharebook-kr/pyupbit)
 # Original Copyright (c) 2021 sharebook-kr
-# Modifications Copyright (c) 2025 Full Stack Research Lab (풀스택연구소)
+# Modifications Copyright (c) 2025 풀스택패밀리 연구소
 #
 # Licensed under the Apache License, Version 2.0
 # See LICENSE file for the full text of the license.
