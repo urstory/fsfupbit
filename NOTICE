@@ -1,0 +1,84 @@
+fsfupbit - Enhanced Python wrapper for Upbit API
+Copyright (c) 2025 Full Stack Research Lab (풀스택연구소)
+
+This product is a modified version of pyupbit (https://github.com/sharebook-kr/pyupbit)
+Original pyupbit Copyright (c) 2021 sharebook-kr
+
+================================================================================
+WHY WE FORKED (포크 사유)
+================================================================================
+
+The original pyupbit repository has not been updated for over 2 years (as of 2025).
+Multiple Pull Requests with important features and bug fixes have been submitted
+but remain unmerged. To address these issues and provide an actively maintained
+version with the latest Upbit API features, Full Stack Research Lab (풀스택연구소)
+created this fork.
+
+원본 pyupbit 저장소가 2년 이상 업데이트되지 않았습니다. 중요한 기능과 버그 수정을
+포함한 여러 Pull Request가 제출되었으나 병합되지 않았습니다. 이러한 문제를 해결하고
+최신 Upbit API 기능을 포함하는 활발하게 유지보드되는 버전을 제공하기 위해
+풀스택연구소에서 이 포크를 생성했습니다.
+
+================================================================================
+ORIGINAL SOURCE (원본 출처)
+================================================================================
+
+Original pyupbit repository:
+https://github.com/sharebook-kr/pyupbit
+
+Original pyupbit authors:
+- Jonghun Yoo (jonghun.yoo@outlook.com)
+- Brayden Jo (brayden.jo@outlook.com)
+
+================================================================================
+MODIFICATIONS (수정 사항)
+================================================================================
+
+Modifications by Full Stack Research Lab (풀스택연구소):
+
+1. Bug Fixes:
+   - Fixed deposit API URL typo (api.upbit.com//v1 → api.upbit.com/v1)
+   - Fixed missing imports in test files
+
+2. Security Improvements:
+   - Added mandatory net_type parameter to withdraw_coin() to prevent asset loss
+   - Added custom exception classes for better error handling
+
+3. New Features (Missing Upbit API Support):
+   - get_orderbook_supported_levels(): Orderbook aggregation level query
+   - get_orderbook(level=...): Orderbook with level parameter
+   - get_deposit_chance(): Deposit availability check
+   - create_deposit_address(): Generate deposit address
+   - get_deposit_address(): Get individual deposit address
+   - get_deposit_addresses(): Get all deposit addresses
+   - get_krw_deposit_info(): Get KRW deposit account info
+   - get_withdraw_chance(): Withdraw availability check
+   - get_withdraw_addresses(): Get whitelisted withdraw addresses
+   - test_order(): Test order creation (no actual execution)
+   - cancel_orders_open(): Cancel all open orders
+   - cancel_and_new_order(): Cancel and re-order
+   - time_in_force parameter: Added to buy/sell_limit_order
+
+4. Extended Features:
+   - Seconds candles: seconds/1, seconds/3, seconds/5, seconds/10, seconds/15, seconds/30, seconds/60, seconds/240
+   - Years candles: years, year
+   - converting_price_unit parameter: Price unit conversion for daily candles
+   - PrivateWebSocketManager: Private WebSocket with JWT authentication
+   - get_travel_rule_vasps(): Travel rule supported exchanges
+   - verify_travel_rule_by_uuid(): Travel rule verification by UUID
+
+5. Code Quality Improvements:
+   - Added complete type hints to all functions
+   - Added comprehensive docstrings (PEP 257)
+   - Improved error handling with custom exceptions
+   - Enhanced API response handling
+
+This product is licensed under the Apache License, Version 2.0
+See LICENSE file for the full text of the license.
+
+For more information about fsfupbit:
+https://github.com/fullstack-research-lab/fsfupbit
+
+Full Stack Research Lab (풀스택연구소)
+Website: https://fullstack.re.kr
+Email: contact@fullstack.re.kr

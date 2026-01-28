@@ -1,0 +1,12 @@
+.idea
+pyupbit/*.txt
+dist
+*.pyc
+pyupbit.egg-info
+venv/*
+upbit.txt
+build/*
+upbit.key
+.env
+.env.local
+.env.*.local
