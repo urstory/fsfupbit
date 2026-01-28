@@ -2,6 +2,10 @@
 
 > Enhanced Python wrapper for Upbit API - A maintained fork of pyupbit
 
+[![PyPI version](https://badge.fury.io/py/fsfupbit)](https://badge.fury.io/pyfupbit)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 업비트(Upbit) 거래소의 API를 쉽게 사용할 수 있는 Python 라이브러리입니다.
 
 ---
